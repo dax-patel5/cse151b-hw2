@@ -10,4 +10,8 @@ epochs: 10
 
 patience: 3
 
-seq_len: 16
+seq_len: 512
+
+batch_size: 256
+
+lr: 0.002

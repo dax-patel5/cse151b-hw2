@@ -28,8 +28,12 @@ def main():
     config_path = ""
     if (args.experiment == 'rnn'):
         config_path = "configs/base_rnn_config.yaml"
-    elif (args.experiment == 'lstm' or args.experiment == 'noteacherforcing'):
+    elif (args.experiment == 'lstm'):
         config_path = "configs/base_lstm_config.yaml"
+    elif (args.experiment == 'noteacherforcing'):
+        # separate config: the best LSTM uses hidden_size 300 while the best
+        # no-teacher-forcing model uses the standard hidden_size 150
+        config_path = "configs/base_noteacherforcing_config.yaml"
     if args.config is not None:
         config_path = args.config
     config = load_config(config_path)
@@ -47,8 +51,10 @@ def main():
 
     print('CREATED SEQUENCES')
 
-    # Convert to PyTorch tensors
-    X_tensor = torch.tensor(X, dtype=torch.long)
+    # Convert to PyTorch tensors. Sequences are stored as int16 (vocab is only
+    # 65 characters) to keep RAM manageable at seq_len 512; batches are cast
+    # back to long on the device inside train/eval before the embedding lookup.
+    X_tensor = torch.tensor(X, dtype=torch.int16)
     y_tensor = torch.tensor(y, dtype=torch.long)
 
     len_data = len(y_tensor)
@@ -81,7 +87,9 @@ def main():
 
     batch_size = config.get('batch_size', 64)
     train_dataset = ShakespeareDataset(X_train, y_train)
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    # drop_last: a trailing batch of size 1 (which occurs at seq_len 512:
+    # 891905 = 3484*256 + 1) hard-crashes the MPS backend's LSTM backward
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
     val_dataset = ShakespeareDataset(X_val, y_val)
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
