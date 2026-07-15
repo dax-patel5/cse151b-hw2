@@ -1,0 +1,99 @@
+from util import *
+import torch
+import torch.optim as optim
+import torch.nn as nn
+import os
+
+from tqdm import tqdm
+
+from shakespeare_lstm import LSTMModel, LSTMModelNoTeacherForcing
+from shakespeare_rnn import RNNModel
+
+
+def _batch_loss(model, criterion, x, y):
+    """Cross-entropy loss for one batch, handling both training regimes.
+
+    Teacher-forced models emit logits only for the character following the
+    sequence, so the loss is against y. The no-teacher-forcing model emits a
+    prediction at every time step, so the loss is against the ground truth at
+    every position (x shifted left by one, then y).
+    """
+    if isinstance(model, LSTMModelNoTeacherForcing):
+        logits = model(x, return_all=True)                      # (B, T, V)
+        targets = torch.cat([x[:, 1:], y.unsqueeze(1)], dim=1)  # (B, T)
+        return criterion(logits.reshape(-1, logits.size(-1)), targets.reshape(-1))
+    logits = model(x)                                           # (B, V)
+    return criterion(logits, y)
+
+
+def train(model, device, train_dataloader, val_dataloader, config):
+
+    # for autograding purposes - your train should also save your best model to the ./models folder
+    experiment = config.get('name', config.get('experiment', 'model'))
+    models_loc = "./models"
+    os.makedirs(models_loc, exist_ok=True)
+    model_path = os.path.join(models_loc, f"trained_{experiment}_model.pth")
+
+    epochs = config['epochs']
+    patience = config.get('patience', 3)
+    lr = config.get('lr', 0.002)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+
+    best_val_loss = float('inf')
+    epochs_without_improvement = 0
+    train_losses, val_losses = [], []
+
+    for epoch in range(epochs):
+        model.train()
+        running_loss, n_batches = 0.0, 0
+        for x, y in tqdm(train_dataloader, desc=f"epoch {epoch + 1}/{epochs}", leave=False):
+            x, y = x.to(device), y.to(device)
+            optimizer.zero_grad()
+            loss = _batch_loss(model, criterion, x, y)
+            loss.backward()
+            # vanilla RNNs (and long self-fed rollouts) are prone to exploding
+            # gradients, so clip before stepping
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 5.0)
+            optimizer.step()
+            running_loss += loss.item()
+            n_batches += 1
+
+        train_loss = running_loss / n_batches
+        val_loss = eval(model, device, val_dataloader)
+        train_losses.append(train_loss)
+        val_losses.append(val_loss)
+        print(f"Epoch {epoch + 1}: train loss {train_loss:.4f}, val loss {val_loss:.4f}")
+
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            epochs_without_improvement = 0
+            torch.save(model.state_dict(), model_path)
+        else:
+            epochs_without_improvement += 1
+            if epochs_without_improvement >= patience:
+                print(f"Early stopping at epoch {epoch + 1}")
+                break
+
+    plot_losses(train_losses, val_losses, config.get('name', experiment))
+
+    # leave the best weights (already saved to disk) loaded on the model
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    return train_losses, val_losses
+
+
+def eval(model, device, val_dataloader):
+
+    model.eval()
+    criterion = nn.CrossEntropyLoss()
+    total_loss, n_batches = 0.0, 0
+    with torch.no_grad():
+        for x, y in val_dataloader:
+            x, y = x.to(device), y.to(device)
+            logits = model(x)               # (B, V): next-character logits
+            total_loss += criterion(logits, y).item()
+            n_batches += 1
+    val_loss = total_loss / n_batches
+
+    return val_loss

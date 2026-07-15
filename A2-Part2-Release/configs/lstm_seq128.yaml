@@ -1,0 +1,19 @@
+model: 'LSTM'
+
+name: 'lstm_seq128'
+
+embed_size: 100
+
+hidden_size: 150
+
+num_layers: 2
+
+epochs: 10
+
+patience: 10
+
+seq_len: 128
+
+batch_size: 256
+
+lr: 0.002
