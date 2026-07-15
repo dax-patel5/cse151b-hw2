@@ -23,9 +23,12 @@ class MaskToTensor(object):
 
 
 def init_weights(m):
+    # Kaiming (He) init is the recommended scheme for ReLU networks
+    # (Lecture: "Tricks of the trade", weight-initialization section), and
+    # biases start at zero so every unit's pre-activation is zero-mean.
     if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-        torch.nn.init.xavier_uniform_(m.weight.data)
-        torch.nn.init.normal_(m.bias.data) #xavier not applicable for biases
+        torch.nn.init.kaiming_normal_(m.weight.data, mode='fan_in', nonlinearity='relu')
+        torch.nn.init.zeros_(m.bias.data)
 
 
 def getClassWeights():
@@ -54,7 +57,7 @@ def train():
         None.
     """
 
-    best_iou_score = 0.0
+    best_acc_score = 0.0
     patience = 8
     epochs_without_improvement = 0
     train_losses, val_losses = [], []
@@ -87,18 +90,20 @@ def train():
 
         print("Finish epoch {}, time elapsed {}".format(epoch, time.time() - ts))
 
-        current_miou_score, current_val_loss = val(epoch)
+        current_miou_score, current_acc, current_val_loss = val(epoch)
         train_losses.append(np.mean(epoch_losses))
         val_losses.append(current_val_loss)
 
-        if current_miou_score > best_iou_score:
-            best_iou_score = current_miou_score
+        # early stopping / model selection on validation pixel accuracy,
+        # the metric the model is evaluated on
+        if current_acc > best_acc_score:
+            best_acc_score = current_acc
             epochs_without_improvement = 0
             # save the best model seen so far
             if not os.path.exists(models_loc):
                 os.makedirs(models_loc)
             torch.save(fcn_model.state_dict(), model_path)
-            print(f"Saved new best model (IoU {best_iou_score:.4f}) to {model_path}")
+            print(f"Saved new best model (acc {best_acc_score:.4f}, IoU {current_miou_score:.4f}) to {model_path}")
         else:
             epochs_without_improvement += 1
             if epochs_without_improvement >= patience:
@@ -155,7 +160,7 @@ def val(epoch):
 
     fcn_model.train() #TURNING THE TRAIN MODE BACK ON TO ENABLE BATCHNORM/DROPOUT!!
 
-    return np.mean(mean_iou_scores), np.mean(losses)
+    return np.mean(mean_iou_scores), np.mean(accuracy), np.mean(losses)
 
 
 def modelTest():
