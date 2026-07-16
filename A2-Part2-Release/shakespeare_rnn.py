@@ -3,6 +3,7 @@ import torch.nn as nn
 
 # Define RNN Model
 class RNNModel(nn.Module):
+    # [AI-assisted: Claude Code]
     def __init__(self, vocab_size, embed_size, hidden_size, num_layers):
         super(RNNModel, self).__init__()
 

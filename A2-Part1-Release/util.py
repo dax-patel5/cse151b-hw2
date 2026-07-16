@@ -3,6 +3,8 @@ import torch
 
 def iou_components(pred, target, n_classes=21):
     """
+    [AI-assisted: Claude Code]
+
     Per-class intersection and union pixel counts for a batch.
 
     Accumulate these across an entire dataset, then divide, to get IoU
@@ -30,6 +32,8 @@ def iou_components(pred, target, n_classes=21):
 
 def iou(pred, target, n_classes = 21):
     """
+    [AI-assisted: Claude Code]
+
     Calculate the Intersection over Union (IoU) for predictions.
 
     Args:
@@ -51,6 +55,8 @@ def iou(pred, target, n_classes = 21):
 
 def pixel_acc(pred, target):
     """
+    [AI-assisted: Claude Code]
+
     Calculate pixel-wise accuracy between predictions and targets.
 
     Args:

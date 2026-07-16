@@ -13,6 +13,8 @@ from shakespeare_rnn import RNNModel
 
 def _batch_loss(model, criterion, x, y):
     """Cross-entropy loss for one batch, handling both training regimes.
+    [AI-assisted: Claude Code]
+
 
     Teacher-forced models emit logits only for the character following the
     sequence, so the loss is against y. The no-teacher-forcing model emits a
@@ -28,6 +30,7 @@ def _batch_loss(model, criterion, x, y):
 
 
 def train(model, device, train_dataloader, val_dataloader, config):
+    # [AI-assisted: Claude Code]
 
     # for autograding purposes - your train should also save your best model to the ./models folder
     experiment = config.get('name', config.get('experiment', 'model'))
@@ -129,6 +132,7 @@ def train(model, device, train_dataloader, val_dataloader, config):
 
 
 def eval(model, device, val_dataloader):
+    # [AI-assisted: Claude Code]
 
     model.eval()
     criterion = nn.CrossEntropyLoss()

@@ -1,4 +1,5 @@
 #!/bin/zsh
+# [AI-assisted: Claude Code]
 # Sequential experiment runner for A2 Part 2.
 # Usage: ./run_experiments.sh <config_name> [<config_name> ...]
 # Each config_name refers to configs/<config_name>.yaml; logs go to logs/<config_name>.log

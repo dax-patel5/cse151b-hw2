@@ -20,6 +20,7 @@ def main():
     parser.add_argument('--experiment', type=str, default='rnn',
                         help='Specify the experiment that you want to run')
     parser.add_argument('--data_dir', type=str, default='./data', help= 'Specify the directory that your shakespeare data is located')
+    # [AI-assisted: Claude Code]
     parser.add_argument('--config', type=str, default=None,
                         help='Optional path to a config yaml, overrides the default config for the experiment')
     args = parser.parse_args()
@@ -34,6 +35,7 @@ def main():
         # separate config: the best LSTM uses hidden_size 300 while the best
         # no-teacher-forcing model uses the standard hidden_size 150
         config_path = "configs/base_noteacherforcing_config.yaml"
+    # [AI-assisted: Claude Code]
     if args.config is not None:
         config_path = args.config
     config = load_config(config_path)
@@ -51,6 +53,7 @@ def main():
 
     print('CREATED SEQUENCES')
 
+    # [AI-assisted: Claude Code]
     # Convert to PyTorch tensors. Sequences are stored as int16 (vocab is only
     # 65 characters) to keep RAM manageable at seq_len 512; batches are cast
     # back to long on the device inside train/eval before the embedding lookup.
@@ -83,6 +86,7 @@ def main():
     print(f"X_val: {X_val.shape}, y_val: {y_val.shape}")
     print(f"X_test: {X_test.shape}, y_test: {y_test.shape}")
 
+    # [AI-assisted: Claude Code]
     del X, y, X_tensor, y_tensor  # free the pre-split copies (matters for long seq_len)
 
     batch_size = config.get('batch_size', 64)
@@ -97,10 +101,12 @@ def main():
     test_dataset = ShakespeareDataset(X_test, y_test)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
+    # [AI-assisted: Claude Code]
     device = torch.device("cuda" if torch.cuda.is_available()
                           else "mps" if torch.backends.mps.is_available() else "cpu")
 
     #choose model based on config
+    # [AI-assisted: Claude Code]
     if args.experiment == 'noteacherforcing':
         model = LSTMModelNoTeacherForcing(vocab_size, config['embed_size'],
                                 config['hidden_size'],

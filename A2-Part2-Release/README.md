@@ -61,3 +61,25 @@ python generate_samples.py     # or run generate.ipynb
 
 generates ~1000-character samples from the best performing LSTM at
 temperatures 0.5, 1, and 2 into `temp0.5.txt`, `temp1.txt`, `temp2.txt`.
+
+## AI usage disclosure
+
+Code sections marked with `[AI-assisted: Claude Code]` comments were written
+with the help of Claude Code (Fable 5), as permitted by the course policy.
+
+Here are some of the prompts I used:
+
+"do the programming portion of these assignments entirely. You have full
+liberty to train and run the models to meet the specs required by the
+homework. However, you must perfectly abide by the submission, code, accuracy
+etc requirements that the assignment pdfs detail."
+
+There were smaller prompts about running the seq-512 experiments on UCSD
+Datahub (whose stock PyTorch had to be upgraded for the assigned GPU),
+pausing/resuming training, and creating the submission zip. Two notable
+debugging episodes are reflected in the code comments: a PyTorch/MPS crash on
+a trailing batch of size 1 (fixed with `drop_last=True`) and per-epoch
+checkpoint-resume added after long runs were killed by memory pressure.
+I reviewed the plan before training started and the results after each
+experiment. I had no code-quality related concerns and did not manually edit
+code.

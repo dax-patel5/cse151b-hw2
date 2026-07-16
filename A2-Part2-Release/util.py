@@ -21,6 +21,7 @@ def encode_text(input_file_path):
     return encoded_text, vocab_size, char_to_idx, idx_to_char
 
 def create_sequences(data, seq_length):
+    # [AI-assisted: Claude Code]
     # Vectorized equivalent of appending data[i:i+seq_length] / data[i+seq_length]
     # for every i — X[i] is a length-seq_length window and y[i] is the next character.
     data = np.asarray(data, dtype=np.int64)
@@ -32,6 +33,8 @@ def create_sequences(data, seq_length):
 
 def plot_losses(train_losses, val_losses, fname):
     """
+    [AI-assisted: Claude Code]
+
     Plots the training and validation losses across epochs and saves the plot as an image file with name - fname(function argument). 
 
     Args:

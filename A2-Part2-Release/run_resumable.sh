@@ -1,4 +1,5 @@
 #!/bin/zsh
+# [AI-assisted: Claude Code]
 # Repeatedly (re)launch one experiment until main.py prints its final test
 # loss, relying on the per-epoch checkpoint in train.py to resume after the
 # process gets OOM-killed. Usage: ./run_resumable.sh <config_name> <max_attempts>

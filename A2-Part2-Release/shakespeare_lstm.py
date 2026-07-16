@@ -3,6 +3,7 @@ import torch.nn as nn
 
 # Define the LSTM model
 class LSTMModel(nn.Module):
+    # [AI-assisted: Claude Code]
     def __init__(self, vocab_size, embed_size, hidden_size, num_layers):
         super(LSTMModel, self).__init__()
 
@@ -23,6 +24,8 @@ class LSTMModel(nn.Module):
 
 class LSTMModelNoTeacherForcing(nn.Module):
     """Identical architecture to LSTMModel; only the forward pass differs.
+    [AI-assisted: Claude Code]
+
 
     Only the first ground-truth character is fed in. Afterwards the argmax of
     the model's own output distribution at each step is embedded and used as

@@ -4,6 +4,8 @@ import torchvision
 
 class TransferFCN(nn.Module):
     """FCN whose encoder is an ImageNet-pretrained ResNet34 (Q5 option b).
+    [AI-assisted: Claude Code]
+
 
     The avgpool and fc layers of ResNet34 are removed so a 224x224 input
     yields a (512, 7, 7) feature map, which feeds the same five-deconv
@@ -11,6 +13,7 @@ class TransferFCN(nn.Module):
     """
 
     def __init__(self, n_class):
+        # [AI-assisted: Claude Code]
         super().__init__()
         self.n_class = n_class
         resnet = torchvision.models.resnet34(weights=torchvision.models.ResNet34_Weights.IMAGENET1K_V1)
@@ -31,6 +34,7 @@ class TransferFCN(nn.Module):
         self.classifier = nn.Conv2d(32, self.n_class, kernel_size=1)
 
     def forward(self, x):
+        # [AI-assisted: Claude Code]
         x5 = self.encoder(x)
 
         y1 = self.bn1(self.relu(self.deconv1(x5)))

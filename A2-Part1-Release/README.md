@@ -26,14 +26,14 @@ python download.py
 - `experimental_fcn.py` — `TransferFCN`: ImageNet-pretrained ResNet34 encoder
   (avgpool + fc removed) with the same five-deconv decoder (Q5 option b).
 - `train.py` — training / validation / test loops with early stopping
-  (patience 5 on validation mean IoU; the best checkpoint is saved).
+  (patience 8 on validation pixel accuracy; the best checkpoint is saved).
 - `pixel.txt` — RGB value of the 7th pixel (index 6) of the 100th image
   (index 99) of the test set, after the 224x224 resize and `ToTensor`
   (values in [0, 1], before normalization).
 
 ## Running
 
-Each experiment trains (30 epochs max, Adam, cross-entropy loss, early stopping)
+Each experiment trains (60 epochs max, AdamW, cross-entropy loss, early stopping)
 if `models/<experiment>.pth` does not exist, then evaluates on the test set. If
 the saved model already exists it is loaded and only evaluated:
 
@@ -56,3 +56,29 @@ test-set IoU is computed per class over the entire test set, then averaged over
 the classes that appear.
 
 `--data_dir` can point at a different VOC data root if needed (default `./data`).
+
+## AI usage disclosure
+
+Code sections marked with `[AI-assisted: Claude Code]` comments were written
+with the help of Claude Code (Fable 5), as permitted by the course policy.
+
+Here are some of the prompts I used:
+
+"do the programming portion of these assignments entirely. You have full
+liberty to train and run the models to meet the specs required by the
+homework. However, you must perfectly abide by the submission, code, accuracy
+etc requirements that the assignment pdfs detail."
+
+"lets work on baseline now. make the small edits you suggested based on
+gary's slides, and run the experiment. make sure the assignment specs allow
+this. if the model improves, retain the newer one. otherwise keep the older
+existing one."
+
+There were smaller prompts about running experiments on UCSD Datahub,
+pausing/resuming training runs, and creating the submission zip. The baseline
+improvements (Kaiming/zero-bias initialization and early stopping on
+validation pixel accuracy) came out of a discussion of the "Tricks of the
+trade" lecture slides; the optimizer stayed AdamW as the assignment requires.
+I reviewed the plan before training started and the results after each
+experiment. I had no code-quality related concerns and did not manually edit
+code.

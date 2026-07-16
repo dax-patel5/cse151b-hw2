@@ -13,6 +13,7 @@ from shakespeare_lstm import LSTMModel
 
 
 def main():
+    # [AI-assisted: Claude Code]
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default='models/trained_lstm_model.pth')
     parser.add_argument('--config', type=str, default='configs/base_lstm_config.yaml')

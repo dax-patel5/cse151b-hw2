@@ -3,6 +3,8 @@ from torch.utils.data import Dataset
 
 class ShakespeareDataset(Dataset):
     """Wraps pre-built (sequence, next-char) tensors for use with a DataLoader.
+    [AI-assisted: Claude Code]
+
 
     Args:
         X (torch.LongTensor): (N, seq_len) input character sequences.

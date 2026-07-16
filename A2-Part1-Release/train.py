@@ -23,6 +23,7 @@ class MaskToTensor(object):
 
 
 def init_weights(m):
+    # [AI-assisted: Claude Code]
     # Kaiming (He) init is the recommended scheme for ReLU networks
     # (Lecture: "Tricks of the trade", weight-initialization section), and
     # biases start at zero so every unit's pre-activation is zero-mean.
@@ -33,6 +34,8 @@ def init_weights(m):
 
 def getClassWeights():
     """Inverse-frequency class weights over the training masks (for Q4.c-style
+    [AI-assisted: Claude Code]
+
     weighted loss). Rare classes get proportionally larger weights."""
     counts = torch.zeros(n_class, dtype=torch.float64)
     for _, labels in train_loader:
@@ -45,6 +48,8 @@ def getClassWeights():
 
 def train():
     """
+    [AI-assisted: Claude Code]
+
     Train a deep learning model using mini-batches.
 
     - Perform forward propagation in each epoch.
@@ -114,6 +119,7 @@ def train():
 
 
 def plot_losses(train_losses, val_losses, fname):
+    # [AI-assisted: Claude Code]
     if not os.path.isdir('plots'):
         os.mkdir('plots')
     plt.figure()
@@ -129,6 +135,8 @@ def plot_losses(train_losses, val_losses, fname):
 
 def val(epoch):
     """
+    [AI-assisted: Claude Code]
+
     Validate the deep learning model on a validation dataset.
 
     Returns:
@@ -165,6 +173,8 @@ def val(epoch):
 
 def modelTest():
     """
+    [AI-assisted: Claude Code]
+
     Test the deep learning model using a test dataset.
 
     Returns:
@@ -206,6 +216,8 @@ def modelTest():
 
 def exportModel(inputs):
     """
+    [AI-assisted: Claude Code]
+
     Export the output of the model for given inputs.
 
     Args:
@@ -230,6 +242,8 @@ def exportModel(inputs):
 
 
 if __name__ == "__main__":
+    # [AI-assisted: Claude Code] — experiment dispatch, device selection, and
+    # train/load logic below were completed with Claude Code
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment', dest="experiment", type=str, default='baseline', help='Specify the experiment that you want to run')
     parser.add_argument('--data_dir', type=str, default='./data', help= 'Specify the directory that your VOC data is located')

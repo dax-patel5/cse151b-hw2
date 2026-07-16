@@ -22,6 +22,8 @@ palette = [0, 0, 0, 128, 0, 0, 0, 128, 0, 128, 128, 0, 0, 0, 128, 128, 0, 128, 0
 
 def make_dataset(mode, data_root):
     """
+    [AI-assisted: Claude Code]
+
     Creates a list of tuples (image_path, mask_path) for a given dataset mode.
 
     Asserts that the mode is one of 'train', 'val', or 'test'.
